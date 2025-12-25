@@ -5,12 +5,14 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \    # <--- NUEVA DEPENDENCIA
     zip \
     unzip \
     curl \
     git
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Instalar extensiones de PHP incluyendo las de PostgreSQL
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd  # <--- pdo_pgsql AÑADIDO
 
 # 2. Instalar Node.js (necesario para compilar estilos con Vite o Mix)
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
