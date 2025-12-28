@@ -1,5 +1,6 @@
 let currentAction = null;
 let currentButton = null;
+let editingRow = null;
 
 function openModal() {
     document.getElementById('userModal').style.display = 'flex';
@@ -29,8 +30,8 @@ document.getElementById('alertConfirm').addEventListener('click', function () {
         const row = currentButton.closest('tr');
         row.remove();
     } else if (currentAction === 'edit') {
-        const row = currentButton.closest('tr');
-        const cells = row.querySelectorAll('td');
+        editingRow = currentButton.closest('tr');
+        const cells = editingRow.querySelectorAll('td');
 
         // Rellenar los datos en el formulario
         document.getElementById('cedula').value = cells[1].textContent;
@@ -43,22 +44,17 @@ document.getElementById('alertConfirm').addEventListener('click', function () {
 
         // Abrir el modal para editar
         openModal();
-
-        // Remover la fila editada para que pueda ser reemplazada
-        row.remove();
     }
 
     closeAlert();
     updateSerialNumbers();
 });
 //Funcion del formulario
-document.getElementById('userForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Evitar recargar la página
-
+document.getElementById('userForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
     const errorDiv = document.getElementById('error');
-    errorDiv.textContent = ''; // Limpiar errores anteriores
+    errorDiv.textContent = '';
 
-    // Validar que los campos existen antes de acceder a .value
     const cedulaInput = document.getElementById('cedula');
     const nombreInput = document.getElementById('nombre');
     const apellidoInput = document.getElementById('apellido');
@@ -67,7 +63,6 @@ document.getElementById('userForm').addEventListener('submit', function (event) 
     const contraseñaInput = document.getElementById('contraseña');
     const activoInput = document.getElementById('activo');
 
-    // Si alguno de los campos no existe, no ejecutar este bloque (es otro formulario)
     if (!cedulaInput || !nombreInput || !apellidoInput || !direccionInput || !emailInput || !contraseñaInput || !activoInput) {
         return;
     }
@@ -78,36 +73,60 @@ document.getElementById('userForm').addEventListener('submit', function (event) 
     const direccion = direccionInput.value.trim();
     const email = emailInput.value.trim();
     const contraseña = contraseñaInput.value.trim();
-    const activo = activoInput.value.trim();
+    const activoRaw = activoInput.value.trim().toLowerCase();
+    // Convertir a booleano para el backend
+    const activo = (activoRaw === 'sí' || activoRaw === 'si' || activoRaw === 'true' || activoRaw === '1');
 
-    if (!cedula || !nombre || !apellido || !direccion || !email || !contraseña || !activo) {
+    if (!cedula || !nombre || !apellido || !direccion || !email || !contraseña || !activoInput.value.trim()) {
         errorDiv.textContent = 'Por favor, complete todos los campos obligatorios.';
         return;
     }
 
-    // Crear nueva fila con clases en cada celda
-    const tableBody = document.getElementById('userTableBody');
-    const newRow = document.createElement('tr');
-
-    newRow.innerHTML = `
-                <td class="table-cell">${tableBody.children.length + 1}</td>
-                <td class="table-cell">${cedula}</td>
-                <td class="table-cell">${nombre}</td>
-                <td class="table-cell">${apellido}</td>
-                <td class="table-cell">${direccion}</td>
-                <td class="table-cell">${email}</td>
-                <td class="table-cell">${contraseña}</td>
-                <td class="table-cell">${activo}</td>
-                <td><button class="action-btn edit-btn edit" onclick="confirmAction('edit', this)">Editar</button></td>
-                <td><button class="action-btn delete-btn delete" onclick="confirmAction('delete', this)">Eliminar</button></td>
-            `;
-
-    tableBody.appendChild(newRow);
-    updateSerialNumbers();
-
-    // Limpiar el formulario y cerrar el modal
-    document.getElementById('userForm').reset();
-    closeModal();
+    // Solo PATCH si se está editando
+    if (editingRow) {
+        try {
+            const response = await fetch(`/usuarios/${cedula}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    nombre,
+                    apellido,
+                    direccion,
+                    email,
+                    usuario: email.split('@')[0],
+                    contraseña,
+                    activo
+                })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                const cells = editingRow.querySelectorAll('td');
+                cells[1].textContent = cedula;
+                cells[2].textContent = nombre;
+                cells[3].textContent = apellido;
+                cells[4].textContent = direccion;
+                cells[5].textContent = email;
+                cells[6].textContent = '********';
+                cells[7].textContent = activo ? 'Sí' : 'No';
+                editingRow = null;
+                updateSerialNumbers();
+                document.getElementById('userForm').reset();
+                closeModal();
+            } else {
+                // Mostrar errores del backend
+                if (data.errors) {
+                    errorDiv.textContent = Object.values(data.errors).join(' ');
+                } else {
+                    errorDiv.textContent = data.message || 'Error al actualizar el usuario.';
+                }
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Error de red o del servidor.';
+        }
+    }
 });
 
 

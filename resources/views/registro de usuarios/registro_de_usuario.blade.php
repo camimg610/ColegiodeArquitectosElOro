@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<meta charset="UTF-8">
 	<meta name="viewport"
 		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -44,8 +45,8 @@
 			<!-- Page header -->
 			<div class="form-container">
 				<h1>Registro de Usuarios</h1>
-				<form action="procesar_registro.php" method="POST">
-					@csrf
+				   <form action="procesar_registro.php" method="POST">
+					   @csrf
 					<nav class="navbar navbar-light bg-light">
 						<div class="col-xs-12 lead">
 							<select id="rowLimit" class=" letra-selec" onchange="showRows(); updateRowsPerPage()"
@@ -240,9 +241,10 @@
 							</ul>
 						</nav>
 					</div>
-					<div id="userModal" class="modal">
-						<div class="modal-content">
-							<form id="userForm">
+					   </form> <!-- Cierre del formulario exterior para evitar formularios anidados -->
+					   <div id="userModal" class="modal">
+						   <div class="modal-content">
+							   <form id="userForm">
 								<div id="error" class="error"></div>
 								<h3 style="text-align: center;">Registrar nuevo usuario</h3>
 
@@ -271,8 +273,8 @@
 								<button class="modal-close" onclick="closeModal()">X</button>
 							</form>
 						</div>
-					</div>
-					<div id="alertModal" class="alert-modal">
+					   </div>
+					   <div id="alertModal" class="alert-modal">
 						<div class="alert-content">
 							<p id="alertMessage">¿Está seguro?</p>
 							<div class="alert-buttons">
@@ -280,8 +282,8 @@
 								<button onclick="closeAlert()">No</button>
 							</div>
 						</div>
-					</div>
-				</form>
+					   </div>
+				   <!-- Eliminado el cierre extra del formulario exterior aquí -->
 		</section>
 
 	</main>
