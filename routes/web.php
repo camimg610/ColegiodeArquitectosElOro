@@ -31,6 +31,10 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
 
+    // --- Ruta para el reporte de usuarios (declarada ANTES del resource) ---
+    Route::get('/usuarios/reporte', [RegistroDeUsuarioController::class, 'reporte'])
+        ->name('usuarios.reporte');
+
     // Usuarios
     Route::resource('usuarios', RegistroDeUsuarioController::class)
         ->except(['show']);
