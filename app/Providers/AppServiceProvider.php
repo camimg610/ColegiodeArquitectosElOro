@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,8 +22,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Headers de seguridad HTTP globales
-        \Illuminate\Support\Facades\Response::macro('secure', function ($value = '', $status = 200, array $headers = []) {
+        /**
+         * 1. FORZAR HTTPS EN PRODUCCIÓN
+         * Esto corrige el error "Estás a punto de enviar información no segura" 
+         * al obligar a Laravel a generar todas las URLs con HTTPS.
+         */
+        if (config('app.env') !== 'local') {
+            URL::forceScheme('https');
+        }
+
+        /**
+         * 2. Headers de seguridad HTTP globales
+         */
+        Response::macro('secure', function ($value = '', $status = 200, array $headers = []) {
             $headers = array_merge([
                 'X-Frame-Options' => 'SAMEORIGIN',
                 'X-Content-Type-Options' => 'nosniff',
@@ -31,8 +45,10 @@ class AppServiceProvider extends ServiceProvider
             return response($value, $status, $headers);
         });
 
-        // Middleware global para headers
-        \Illuminate\Support\Facades\Route::middlewareGroup('secure-headers', [function ($request, $next) {
+        /**
+         * 3. Middleware global para headers
+         */
+        Route::middlewareGroup('secure-headers', [function ($request, $next) {
             $response = $next($request);
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
             $response->headers->set('X-Content-Type-Options', 'nosniff');
