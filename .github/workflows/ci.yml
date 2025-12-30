@@ -1,0 +1,27 @@
+name: Proceso de Verificación CAE
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verificando subida de código
+      uses: actions/checkout@v4
+
+    - name: Realizando Proceso de compilación (Entorno)
+      run: |
+        cp .env.example .env
+        composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        php artisan key:generate
+
+    - name: Desplegando proceso de verificación
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Ejecución de pruebas Unitarias de verificacion e integración
+      run: php vendor/bin/phpunit
