@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
         ->except(['show']);
 
     // Inscripciones
+    // Reporte de inscripciones (debe ir antes del resource)
+    Route::get('/inscripciones/reporte', [InscripcionesController::class, 'reporte'])->name('inscripciones.reporte');
     Route::resource('inscripciones', InscripcionesController::class)
         ->except(['show']);
 
@@ -46,12 +48,17 @@ Route::middleware('auth')->group(function () {
         ->except(['show']);
 
     // Alquileres
+    // Reporte de alquiler (debe ir antes del resource)
+    Route::get('/alquiler/reporte', [AlquilerController::class, 'reporte'])->name('alquiler.reporte');
     Route::resource('alquiler', AlquilerController::class)
         ->except(['show']);
 
-    // Roles y permisos
+    // Reporte de roles (debe ir antes del resource)
+    Route::get('/roles/reporte', [RolesController::class, 'reporte'])->name('roles.reporte');
     Route::resource('roles', RolesController::class)
         ->except(['show']);
+    // Reporte de permisos (debe ir antes del resource)
+    Route::get('/permisos/reporte', [PermisosController::class, 'reporte'])->name('permisos.reporte');
     Route::resource('permisos', PermisosController::class)
         ->except(['show']);
 
