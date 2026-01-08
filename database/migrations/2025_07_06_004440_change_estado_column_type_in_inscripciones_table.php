@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('INSCRIPCIONES', function (Blueprint $table) {
-            $table->string('estado')->change();
+            // Si necesitas convertir a boolean, usa SQL directo para PostgreSQL
+            DB::statement('ALTER TABLE "INSCRIPCIONES" ALTER COLUMN "estado" TYPE boolean USING estado::boolean');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('INSCRIPCIONES', function (Blueprint $table) {
-            $table->boolean('estado')->change();
+            DB::statement('ALTER TABLE "INSCRIPCIONES" ALTER COLUMN "estado" TYPE varchar(255) USING estado::varchar');
         });
     }
 };

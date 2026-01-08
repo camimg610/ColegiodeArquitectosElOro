@@ -120,17 +120,15 @@
                 @forelse($eventos as $index => $evento)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $evento->id_evento }}</td>
-                    <td>{{ $evento->nombre_evento }}</td>
-                    <td>{{ Str::limit($evento->descripcion, 50) ?: 'Sin descripción' }}</td>
-                    <td>{{ $evento->fecha_evento ? \Carbon\Carbon::parse($evento->fecha_evento)->format('d/m/Y') : 'N/A' }}</td>
-                    <td>{{ $evento->hora_evento ?: 'N/A' }}</td>
-                    <td>{{ $evento->lugar ?: 'N/A' }}</td>
-                    <td>{{ $evento->capacidad ?: 'N/A' }}</td>
-                    <td class="{{ $evento->activo ? 'status-active' : 'status-inactive' }}">
-                        {{ $evento->activo ? 'Activo' : 'Inactivo' }}
-                    </td>
-                    <td>{{ $evento->created_at ? $evento->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                    <td>{{ isset($evento->id_evento) ? $evento->id_evento : 'N/A' }}</td>
+                    <td>{{ isset($evento->nombre) && $evento->nombre ? $evento->nombre : 'N/A' }}</td>
+                    <td>{{ isset($evento->descripcion) && $evento->descripcion ? Str::limit($evento->descripcion, 50) : 'Sin descripción' }}</td>
+                    <td>{{ isset($evento->fecha) && $evento->fecha ? $evento->fecha : 'N/A' }}</td>
+                    <td>{{ isset($evento->hora_inicio) && $evento->hora_inicio ? $evento->hora_inicio : 'N/A' }} - {{ isset($evento->hora_fin) && $evento->hora_fin ? $evento->hora_fin : 'N/A' }}</td>
+                    <td>{{ isset($evento->salon->nombre) ? $evento->salon->nombre : 'N/A' }}</td>
+                    <td>N/A</td>
+                    <td class="status-active">Activo</td>
+                    <td>{{ isset($evento->created_at) && $evento->created_at ? $evento->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                 </tr>
                 @empty
                 <tr>

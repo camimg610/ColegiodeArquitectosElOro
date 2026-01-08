@@ -54,9 +54,9 @@ class Rental extends Model
     }
 
     /**
-     * Get the first salon through details
+     * Accesor para obtener el primer salón a través de los detalles
      */
-    public function salon()
+    public function getSalonDetalleAttribute()
     {
         $detail = $this->details()->first();
         return $detail ? $detail->salon : null;

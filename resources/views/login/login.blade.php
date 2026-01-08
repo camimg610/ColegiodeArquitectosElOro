@@ -54,26 +54,26 @@
 				@endif
 				<div class="form-group">
 					<label for="UserName" class="bmd-label-floating"><i class="fas fa-user-secret"></i> &nbsp; Usuario</label>
-					<input type="text" 
-						   class="form-control @error('usuario') is-invalid @enderror" 
-						   id="UserName" 
-						   name="usuario" 
-						   pattern="[a-zA-Z0-9]{1,35}" 
-						   maxlength="35" 
-						   value="{{ old('usuario') }}" 
-						   required
-						   autofocus>
+					     <input type="text"
+						     class="form-control @error('usuario') is-invalid @enderror"
+						     id="UserName"
+						     name="usuario"
+						     pattern="[a-zA-Z0-9_]{1,35}"
+						     maxlength="35"
+						     value="{{ old('usuario') }}"
+						     required
+						     autofocus>
 					@error('usuario')
 						<div class="invalid-feedback">{{ $message }}</div>
 					@enderror
 				</div>
 				<div class="form-group">
 					<label for="UserPassword" class="bmd-label-floating"><i class="fas fa-key"></i> &nbsp; Contraseña</label>
-					<input type="password" 
-						   class="form-control @error('password') is-invalid @enderror" 
-						   id="UserPassword" 
-						   name="password" 
-						   maxlength="200" 
+					<input type="password"
+						   class="form-control @error('password') is-invalid @enderror"
+						   id="UserPassword"
+						   name="password"
+						   maxlength="200"
 						   required
 						   autocomplete="current-password">
 					@error('password')
@@ -105,9 +105,9 @@
 	<!-- Bootstrap Material Design V4.0 -->
 	<script src="{{ asset('js/bootstrap-material-design.min.js') }}"></script>
 	<script>
-		$(document).ready(function() { 
+		$(document).ready(function() {
 			$('body').bootstrapMaterialDesign();
-			
+
 			// Mostrar errores con SweetAlert2
 			@if($errors->any())
 				Swal.fire({

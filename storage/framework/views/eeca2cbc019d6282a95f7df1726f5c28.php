@@ -8,28 +8,28 @@
 	<title>Lista de prestamos</title>
 
 	<!-- Normalize V8.0.1 -->
-<link rel="stylesheet" href="{{ asset('css/normalize.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/normalize.css')); ?>">
 
 <!-- Bootstrap V4.3 -->
-<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/bootstrap.min.css')); ?>">
 
 <!-- Bootstrap Material Design V4.0 -->
-<link rel="stylesheet" href="{{ asset('css/bootstrap-material-design.min.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/bootstrap-material-design.min.css')); ?>">
 
 <!-- Font Awesome V5.9.0 -->
-<link rel="stylesheet" href="{{ asset('css/all.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/all.css')); ?>">
 
 <!-- Sweet Alerts V8.13.0 CSS file -->
-<link rel="stylesheet" href="{{ asset('css/sweetalert2.min.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/sweetalert2.min.css')); ?>">
 
 <!-- Sweet Alert V8.13.0 JS file-->
-<script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+<script src="<?php echo e(asset('js/sweetalert2.min.js')); ?>"></script>
 
 <!-- jQuery Custom Content Scroller V3.1.5 -->
-<link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/jquery.mCustomScrollbar.css')); ?>">
 
 <!-- General Styles -->
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/style.css')); ?>">
 
 </head>
 
@@ -38,14 +38,14 @@
 	<!-- Main container -->
 	<main class="full-box main-container">
 		<!-- Nav lateral -->
-		@include('layout.header')
+		<?php echo $__env->make('layout.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 		<section class="full-box page-content">
-			@include('layout.nav')
+			<?php echo $__env->make('layout.nav', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 			<!-- Page header -->
 			<div class="form-container">
 				<h1>Lista de eventos</h1>
 				<form action="procesar_registro.php" method="POST">
-					@csrf
+					<?php echo csrf_field(); ?>
 					<nav class="navbar navbar-light bg-light">
 						<div class="col-xs-12 lead">
 							<select id="rowLimit" class=" letra-selec" onchange="showRows(); updateRowsPerPage()"
@@ -211,3 +211,4 @@
 </body>
 
 </html>
+<?php /**PATH E:\SEmestre pasado\Disco-cami\Proj_ppi_02\Proj_ppi_01\resources\views/eventos/eventos.blade.php ENDPATH**/ ?>

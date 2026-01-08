@@ -102,7 +102,7 @@ class EventosController extends Controller
     {
         $format = $request->get('format', 'pdf');
 
-        $eventos = Event::with('salon')->orderBy('fecha_evento')->get();
+        $eventos = Event::with('salon')->orderBy('fecha')->get();
 
         if ($format === 'csv') {
             return $this->generateCsvReport($eventos);
@@ -127,18 +127,19 @@ class EventosController extends Controller
             $file = fopen('php://output', 'w');
 
             // Headers
-            fputcsv($file, ['ID', 'Nombre del Evento', 'Descripción', 'Fecha del Evento', 'Hora', 'Lugar', 'Capacidad', 'Estado', 'Salón', 'Fecha Creación']);
+            fputcsv($file, ['ID', 'Nombre del Evento', 'Descripción', 'Fecha del Evento', 'Hora Inicio', 'Hora Fin', 'Lugar', 'Capacidad', 'Estado', 'Salón', 'Fecha Creación']);
 
             // Data
             foreach ($eventos as $evento) {
                 fputcsv($file, [
-                    $evento->id_evento,
-                    $evento->nombre_evento,
+                    $evento->id ?? $evento->id_evento ?? 'N/A',
+                    $evento->nombre ?? $evento->nombre_evento ?? 'N/A',
                     $evento->descripcion ?: 'Sin descripción',
-                    $evento->fecha_evento ? \Carbon\Carbon::parse($evento->fecha_evento)->format('d/m/Y') : 'N/A',
-                    $evento->hora_evento ?: 'N/A',
-                    $evento->lugar ?: 'N/A',
-                    $evento->capacidad ?: 'N/A',
+                    $evento->fecha ? \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') : 'N/A',
+                    $evento->hora_inicio ?? 'N/A',
+                    $evento->hora_fin ?? 'N/A',
+                    $evento->lugar ?? 'N/A',
+                    $evento->capacidad ?? 'N/A',
                     $evento->activo ? 'Activo' : 'Inactivo',
                     $evento->salon ? $evento->salon->nombre_salon : 'N/A',
                     $evento->created_at ? $evento->created_at->format('d/m/Y H:i') : 'N/A'

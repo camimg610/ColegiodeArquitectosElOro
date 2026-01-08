@@ -50,7 +50,7 @@ class AlquilerController extends Controller
         $request->validate([
             'cedula_usuario' => 'required|exists:"USUARIO","Cedula"',
             'id_salon' => 'required|exists:"SALONES",id_salon',
-            'fecha_alquiler' => 'required|date',
+            'fecha' => 'required|date',
             'hora_inicio' => 'required|integer',
             'hora_fin' => 'required|integer',
             'motivo' => 'required|string',
@@ -71,7 +71,7 @@ class AlquilerController extends Controller
         $request->validate([
             'cedula_usuario' => 'required|exists:"USUARIO","Cedula"',
             'id_salon' => 'required|exists:"SALONES",id_salon',
-            'fecha_alquiler' => 'required|date',
+            'fecha' => 'required|date',
             'hora_inicio' => 'required|integer',
             'hora_fin' => 'required|integer',
             'motivo' => 'required|string',
@@ -104,7 +104,7 @@ class AlquilerController extends Controller
     {
         $format = $request->get('format', 'pdf');
 
-        $alquileres = Rental::with('details.user', 'details.salon')->orderBy('fecha_alquiler', 'desc')->get();
+        $alquileres = Rental::with('details.user', 'details.salon')->orderBy('fecha', 'desc')->get();
 
         if ($format === 'csv') {
             return $this->generateCsvReport($alquileres);
@@ -120,11 +120,6 @@ class AlquilerController extends Controller
     {
         $filename = 'alquileres_' . date('Y-m-d_H-i-s') . '.csv';
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
         $callback = function() use ($alquileres) {
             $file = fopen('php://output', 'w');
 
@@ -136,9 +131,9 @@ class AlquilerController extends Controller
                 fputcsv($file, [
                     $alquiler->id_alquiler,
                     $alquiler->user ? $alquiler->user->Nombre . ' ' . $alquiler->user->Apellido : 'N/A',
-                    $alquiler->salon ? $alquiler->salon->nombre_salon : 'N/A',
+                    $alquiler->salon_detalle ? $alquiler->salon_detalle->nombre : 'N/A',
                     $alquiler->cantidad_salones ?: 'N/A',
-                    $alquiler->fecha_alquiler ? \Carbon\Carbon::parse($alquiler->fecha_alquiler)->format('d/m/Y') : 'N/A',
+                    $alquiler->fecha ? \Carbon\Carbon::parse($alquiler->fecha)->format('d/m/Y') : 'N/A',
                     $alquiler->hora_inicio ?: 'N/A',
                     $alquiler->hora_fin ?: 'N/A',
                     $alquiler->activo ? 'Activo' : 'Inactivo',
@@ -149,7 +144,7 @@ class AlquilerController extends Controller
             fclose($file);
         };
 
-        return Response::stream($callback, 200, $headers);
+        return Response::streamDownload($callback, $filename, ['Content-Type' => 'text/csv']);
     }
 
     /**

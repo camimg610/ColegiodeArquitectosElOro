@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Alquileres</title>
+    <title>Reporte de Eventos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,69 +85,56 @@
 </head>
 <body>
     <div class="header">
-        <h1>Reporte de Alquileres</h1>
+        <h1>Reporte de Eventos</h1>
         <p>Sistema de Gestión de Eventos y Alquileres</p>
-        <p>Generado el: {{ now()->format('d/m/Y H:i:s') }}</p>
+        <p>Generado el: <?php echo e(now()->format('d/m/Y H:i:s')); ?></p>
     </div>
 
     <div class="summary">
         <h4>Resumen del Reporte</h4>
-        <p><strong>Total de alquileres:</strong> {{ $alquileres->count() }}</p>
-        <p><strong>Alquileres activos:</strong> {{ $alquileres->where('activo', true)->count() }}</p>
-        <p><strong>Alquileres inactivos:</strong> {{ $alquileres->where('activo', false)->count() }}</p>
-        <p><strong>Total de salones alquilados:</strong> {{ $alquileres->sum('cantidad_salones') }}</p>
+        <p><strong>Total de eventos:</strong> <?php echo e($eventos->count()); ?></p>
+        <p><strong>Eventos activos:</strong> <?php echo e($eventos->where('activo', true)->count()); ?></p>
+        <p><strong>Eventos inactivos:</strong> <?php echo e($eventos->where('activo', false)->count()); ?></p>
+        <p><strong>Eventos futuros:</strong> <?php echo e($eventos->where('fecha_evento', '>', now())->count()); ?></p>
+        <p><strong>Eventos pasados:</strong> <?php echo e($eventos->where('fecha_evento', '<', now())->count()); ?></p>
     </div>
 
     <div class="info-section">
-        <h3>Lista de Alquileres</h3>
+        <h3>Lista de Eventos</h3>
         <table>
             <thead>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Salón</th>
-                    <th>Cantidad</th>
-                    <th>Fecha Alquiler</th>
-                    <th>Hora Inicio</th>
-                    <th>Hora Fin</th>
+                    <th>Nombre del Evento</th>
+                    <th>Descripción</th>
+                    <th>Fecha del Evento</th>
+                    <th>Hora</th>
+                    <th>Lugar</th>
+                    <th>Capacidad</th>
                     <th>Estado</th>
                     <th>Fecha Creación</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($alquileres as $index => $alquiler)
+                <?php $__empty_1 = true; $__currentLoopData = $eventos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $evento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $alquiler->id_alquiler }}</td>
-                    <td>
-                        @if(isset($alquiler->user) && $alquiler->user)
-                            {{ $alquiler->user->Nombre ?? '' }} {{ $alquiler->user->Apellido ?? '' }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td>
-                        @if(isset($alquiler->salon_detalle) && $alquiler->salon_detalle)
-                            {{ $alquiler->salon_detalle->nombre ?? '' }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td>{{ isset($alquiler->cantidad_salones) && $alquiler->cantidad_salones ? $alquiler->cantidad_salones : 'N/A' }}</td>
-                    <td>{{ isset($alquiler->fecha) && $alquiler->fecha ? \Carbon\Carbon::parse($alquiler->fecha)->format('d/m/Y') : 'N/A' }}</td>
-                    <td>{{ isset($alquiler->hora_inicio) && $alquiler->hora_inicio ? $alquiler->hora_inicio : 'N/A' }}</td>
-                    <td>{{ isset($alquiler->hora_fin) && $alquiler->hora_fin ? $alquiler->hora_fin : 'N/A' }}</td>
-                    <td class="{{ isset($alquiler->activo) && $alquiler->activo ? 'status-active' : 'status-inactive' }}">
-                        {{ isset($alquiler->activo) && $alquiler->activo ? 'Activo' : 'Inactivo' }}
-                    </td>
-                    <td>{{ isset($alquiler->created_at) && $alquiler->created_at ? $alquiler->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                    <td><?php echo e($index + 1); ?></td>
+                    <td><?php echo e(isset($evento->id_evento) ? $evento->id_evento : 'N/A'); ?></td>
+                    <td><?php echo e(isset($evento->nombre) && $evento->nombre ? $evento->nombre : 'N/A'); ?></td>
+                    <td><?php echo e(isset($evento->descripcion) && $evento->descripcion ? Str::limit($evento->descripcion, 50) : 'Sin descripción'); ?></td>
+                    <td><?php echo e(isset($evento->fecha) && $evento->fecha ? $evento->fecha : 'N/A'); ?></td>
+                    <td><?php echo e(isset($evento->hora_inicio) && $evento->hora_inicio ? $evento->hora_inicio : 'N/A'); ?> - <?php echo e(isset($evento->hora_fin) && $evento->hora_fin ? $evento->hora_fin : 'N/A'); ?></td>
+                    <td><?php echo e(isset($evento->salon->nombre) ? $evento->salon->nombre : 'N/A'); ?></td>
+                    <td>N/A</td>
+                    <td class="status-active">Activo</td>
+                    <td><?php echo e(isset($evento->created_at) && $evento->created_at ? $evento->created_at->format('d/m/Y H:i') : 'N/A'); ?></td>
                 </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
-                    <td colspan="10" style="text-align: center;">No hay alquileres registrados</td>
+                    <td colspan="10" style="text-align: center;">No hay eventos registrados</td>
                 </tr>
-                @endforelse
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -158,3 +145,4 @@
     </div>
 </body>
 </html>
+<?php /**PATH E:\SEmestre pasado\Disco-cami\Proj_ppi_02\Proj_ppi_01\resources\views/reports/eventos-pdf.blade.php ENDPATH**/ ?>
